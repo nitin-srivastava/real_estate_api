@@ -28,7 +28,7 @@ RSpec.describe Api::V1::ApartmentsController do
   end
 
   describe 'GET index' do
-    let!(:apartments) do
+    let!(:result) do
       Apartment.order(:created_at).map do |apartment|
         { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
           'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
@@ -42,7 +42,23 @@ RSpec.describe Api::V1::ApartmentsController do
     end
 
     it { expect(response.status).to eq(200) }
-    it { expect(JSON.parse(response.body)['apartments']).to eq(apartments) }
+    it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+  end
+
+  describe 'GET show' do
+    let!(:result) do
+      { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+        'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+        'sq_ft' => apartment.sq_ft, 'apartment_type' => apartment.apartment_type,
+        'price' => apartment.price.to_s, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+        'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+    end
+    before do
+      get :show, params: { id: apartment.id }, format: :json
+    end
+
+    it { expect(response.status).to eq(200) }
+    it { expect(JSON.parse(response.body)).to eq(result) }
   end
 
 end
