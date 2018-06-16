@@ -21,6 +21,11 @@ RSpec.describe JsonWebToken do
       it { expect(JsonWebToken.decode('priweipoi1231')).to eq('Not enough or too many segments') }
     end
 
+    context 'when token is expired' do
+      let(:expired_token) { expired_token_generator(2) }
+      it { expect(JsonWebToken.decode(expired_token)).to eq('Signature has expired') }
+    end
+
     context 'when token is valid' do
       let(:token) { 'abcdefg12345678' }
       before do
