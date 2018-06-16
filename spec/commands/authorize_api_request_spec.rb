@@ -5,6 +5,17 @@ RSpec.describe AuthorizeApiRequest do
   describe '#call' do
     let(:user) { create(:user) }
 
+
+    context 'when token is missing' do
+      let(:header) { { 'Authorization' => token_generator(user.id) } }
+      let(:call_response) { described_class.call({}) }
+
+      it { expect(call_response.success?).to be_falsey }
+      it { expect(call_response.failure?).to be_truthy }
+      it { expect(call_response.errors[:token]).to eq(['Missing token']) }
+      it { expect(call_response.result).to be_nil }
+    end
+
     context 'when token is invalid' do
       let(:header) { { 'Authorization' => expired_token_generator(user.id) } }
       let(:call_response) { described_class.call(header) }
@@ -24,6 +35,5 @@ RSpec.describe AuthorizeApiRequest do
       it { expect(call_response.errors).to eq({}) }
       it { expect(call_response.result).to eq(user) }
     end
-
   end
 end

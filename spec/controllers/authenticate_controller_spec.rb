@@ -1,9 +1,12 @@
 require 'rails_helper'
 
-RSpec.describe AuthenticateController, type: :request do
+RSpec.describe AuthenticateController do
 
   describe 'POST login' do
     let(:user) { create(:user) }
+    let(:headers) do
+      { "Content-Type" => "application/json" }
+    end
     let(:valid_credentials) do
       { email: user.email, password: user.password }
     end
@@ -12,12 +15,12 @@ RSpec.describe AuthenticateController, type: :request do
       { email: 'foo@bar.com', password: 'foobar123' }
     end
 
-    let(:headers) do
-      { "Content-Type" => "application/json" }
+    before do
+      request.headers.merge!(headers)
     end
 
     context 'when login successfully' do
-      before { post '/api/v1/auth/login', params: valid_credentials }
+      before { post :login, params: valid_credentials }
 
       it 'should return an authentication token' do
         expect(response.status).to eq(200)
@@ -26,7 +29,7 @@ RSpec.describe AuthenticateController, type: :request do
     end
 
     context 'when login failed' do
-      before { post '/api/v1/auth/login', params: invalid_credentials }
+      before { post :login, params: invalid_credentials }
 
       it 'should return 401' do
         expect(response.status).to eq(401)
