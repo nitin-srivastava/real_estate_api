@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 2018_06_16_110748) do
     t.string "state"
     t.integer "beds"
     t.integer "baths"
-    t.integer "sq_ft"
+    t.integer "area"
     t.string "apartment_type"
     t.datetime "sale_date"
     t.decimal "price"

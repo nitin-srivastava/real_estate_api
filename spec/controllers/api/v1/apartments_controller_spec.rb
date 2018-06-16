@@ -11,39 +11,50 @@ RSpec.describe Api::V1::ApartmentsController do
   end
 
   describe 'GET index' do
-    let!(:apartment) { create(:apartment)}
-    let!(:apartment_omaha) do
-      create(:apartment, street: '51 OMAHA CT', zip: 95823, sq_ft: 1167,
-             price: 68212, latitude: 38.478902, longitude: -121.431028)
-    end
-    let!(:apartment_peppermill) do
-      create(:apartment, street: '5828 PEPPERMILL CT', zip: 95841, sq_ft: 1122,
-             apartment_type: 'Condo', price: 89921, latitude: 38.662595, longitude: -121.327813)
-    end
-    let!(:apartment_trinity) do
-      create(:apartment, street: '11150 TRINITY RIVER DR Unit 114', city: 'RANCHO CORDOVA', zip: 95670,
-             sq_ft: 941, apartment_type: 'Condo', price: 94905, latitude: 38.621188, longitude: -121.270555)
-    end
-    let!(:apartment_oakvale) do
-      create(:apartment, street: '7511 OAKVALE CT', city: 'NORTH HIGHLANDS', zip: 95660, beds: 4, baths: 2,
-             sq_ft: 1240, apartment_type: 'Condo', price: 123000, latitude: 38.621188, longitude: -121.270555)
-    end
 
-    let!(:result) do
-      Apartment.order(:created_at).map do |apartment|
-        { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-          'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-          'sq_ft' => apartment.sq_ft, 'apartment_type' => apartment.apartment_type,
-          'price' => apartment.price.to_s, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
-          'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+    context 'without pagination and search params' do
+      let!(:apartments) { create_list(:apartment, 33)}
+      let!(:result) do
+        Apartment.order(:created_at).page(1).per_page(10).map do |apartment|
+          { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+            'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+            'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+            'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+            'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+        end
       end
-    end
-    before do
-      get :index, format: :json
+
+      before do
+        get :index, format: :json
+      end
+
+      it { expect(response.status).to eq(200) }
+      it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+      it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>10,
+                                                                 'total_entries'=>33, 'total_pages'=>4}) }
     end
 
-    it { expect(response.status).to eq(200) }
-    it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+    context 'with pagination params' do
+      let!(:apartments) { create_list(:apartment, 33)}
+      let!(:result) do
+        Apartment.order(:created_at).page(2).per_page(20).map do |apartment|
+          { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+            'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+            'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+            'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+            'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+        end
+      end
+
+      before do
+        get :index, params: { page: 2, per_page: 20 }, format: :json
+      end
+
+      it { expect(response.status).to eq(200) }
+      it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+      it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>2, 'page_entries'=>13,
+                                                                 'total_entries'=>33, 'total_pages'=>2}) }
+    end
   end
 
   describe 'GET show' do
@@ -51,8 +62,8 @@ RSpec.describe Api::V1::ApartmentsController do
     let!(:result) do
       { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
         'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-        'sq_ft' => apartment.sq_ft, 'apartment_type' => apartment.apartment_type,
-        'price' => apartment.price.to_s, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+        'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+        'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
         'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
     end
 
@@ -113,7 +124,9 @@ RSpec.describe Api::V1::ApartmentsController do
 
     context 'is unsuccessful' do
       before do
-        put :update, params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => nil, 'city' => nil)}, format: :json
+        put :update,
+            params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => nil, 'city' => nil)},
+            format: :json
       end
 
       it { expect(response.status).to eq(422) }
@@ -124,7 +137,9 @@ RSpec.describe Api::V1::ApartmentsController do
 
     context 'is successful' do
       before do
-        put :update, params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => 95660, 'city' => 'NORTH HIGHLANDS')}, format: :json
+        put :update,
+            params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => 95660, 'city' => 'NORTH HIGHLANDS')},
+            format: :json
       end
 
       it { expect(response.status).to eq(200) }

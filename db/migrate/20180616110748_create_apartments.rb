@@ -7,7 +7,7 @@ class CreateApartments < ActiveRecord::Migration[5.2]
       t.string :state
       t.integer :beds
       t.integer :baths
-      t.integer :sq_ft
+      t.integer :area
       t.string :apartment_type
       t.datetime :sale_date
       t.decimal :price

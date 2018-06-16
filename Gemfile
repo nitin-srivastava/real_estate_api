@@ -12,6 +12,7 @@ gem 'jwt'
 gem 'simple_command'
 gem 'jbuilder'
 gem 'rack-cors'
+gem 'will_paginate', '~> 3.1.0'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

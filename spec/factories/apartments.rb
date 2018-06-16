@@ -6,7 +6,7 @@ FactoryBot.define do
     state 'CA'
     beds 2
     baths 1
-    sq_ft 836
+    area 836
     apartment_type 'Residential'
     sale_date Time.current
     price 59222
