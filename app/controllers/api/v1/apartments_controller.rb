@@ -5,7 +5,11 @@ module Api
       before_action :set_apartment, only: [:show, :update, :destroy]
 
       def index
-        @apartments = Apartment.order(:created_at).page(current_page).per_page(per_page)
+        apartments = Apartment.order(:created_at)
+        if search_params?
+          apartments = apartments.where(search_query)
+        end
+        @apartments = apartments.page(current_page).per_page(per_page)
         render status: :ok
       end
 
@@ -56,6 +60,41 @@ module Api
       def per_page
         return params[:per_page].to_i unless params[:per_page].blank?
         10
+      end
+
+      def search_params?
+        params.keys.any? { |key| Apartment::SEARCH_KEYS.include?(key) }
+      end
+
+      def search_query
+        @arr_columns = []
+        @arr_params = []
+        params.each do |key, value|
+          if value.present?
+            filter_column(key, value) unless value.blank?
+          end
+        end
+        [@arr_columns.join(' AND '), *@arr_params]
+      end
+
+      def filter_column(key, value)
+        case key
+          when 'apartment_type'
+            @arr_columns.push('apartment_type = ?')
+            @arr_params.push(value)
+          when 'min_price'
+            @arr_columns.push('price >= ?')
+            @arr_params.push(value)
+          when 'max_price'
+            @arr_columns.push('price <= ?')
+            @arr_params.push(value)
+          when 'min_area'
+            @arr_columns.push('area >= ?')
+            @arr_params.push(value)
+          when 'max_area'
+            @arr_columns.push('area <= ?')
+            @arr_params.push(value)
+        end
       end
 
     end

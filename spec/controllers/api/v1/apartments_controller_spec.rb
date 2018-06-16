@@ -55,6 +55,174 @@ RSpec.describe Api::V1::ApartmentsController do
       it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>2, 'page_entries'=>13,
                                                                  'total_entries'=>33, 'total_pages'=>2}) }
     end
+
+    context 'with search' do
+
+      let!(:apartment) { create(:apartment)}
+      let!(:apartment_omaha) do
+        create(:apartment, street: '51 OMAHA CT', zip: 95823, area: 1167,
+               price: 68212, latitude: 38.478902, longitude: -121.431028)
+      end
+      let!(:apartment_peppermill) do
+        create(:apartment, street: '5828 PEPPERMILL CT', zip: 95841, area: 1122,
+               apartment_type: 'Condo', price: 89921, latitude: 38.662595, longitude: -121.327813)
+      end
+      let!(:apartment_trinity) do
+        create(:apartment, street: '11150 TRINITY RIVER DR Unit 114', city: 'RANCHO CORDOVA', zip: 95670,
+               area: 941, apartment_type: 'Condo', price: 94905, latitude: 38.621188, longitude: -121.270555)
+      end
+      let!(:apartment_oakvale) do
+        create(:apartment, street: '7511 OAKVALE CT', city: 'NORTH HIGHLANDS', zip: 95660, beds: 4, baths: 2,
+               area: 1240, apartment_type: 'Condo', price: 123000, latitude: 38.621188, longitude: -121.270555)
+      end
+
+      context 'by apartment_type' do
+
+        let!(:result) do
+          Apartment.where(apartment_type: 'Residential').order(:created_at).map do |apartment|
+            { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+              'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+              'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+              'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+              'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+          end
+        end
+        before do
+          get :index, params: { apartment_type: 'Residential' }, format: :json
+        end
+
+        it { expect(response.status).to eq(200) }
+        it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+        it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>2,
+                                                                   'total_entries'=>2, 'total_pages'=>1}) }
+      end
+
+      context 'by price range min and max.' do
+
+        context 'When search by greater than min price' do
+          let!(:result) do
+            Apartment.where('price >=?', 90000).order(:created_at).map do |apartment|
+              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+                'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+            end
+          end
+          before do
+            get :index, params: { min_price: 90000 }, format: :json
+          end
+
+          it { expect(response.status).to eq(200) }
+          it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+          it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>2,
+                                                                     'total_entries'=>2, 'total_pages'=>1}) }
+        end
+
+        context 'When search by less than max price' do
+          let!(:result) do
+            Apartment.where('price <=?', 90000).order(:created_at).map do |apartment|
+              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+                'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+            end
+          end
+          before do
+            get :index, params: { max_price: 90000 }, format: :json
+          end
+
+          it { expect(response.status).to eq(200) }
+          it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+          it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>3,
+                                                                     'total_entries'=>3, 'total_pages'=>1}) }
+        end
+
+        context 'When search by given price range' do
+          let!(:result) do
+            Apartment.where('price >=? AND price <=?', 60000, 100000).order(:created_at).map do |apartment|
+              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+                'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+            end
+          end
+          before do
+            get :index, params: { min_price: 60000, max_price: 100000 }, format: :json
+          end
+
+          it { expect(response.status).to eq(200) }
+          it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+          it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>3,
+                                                                     'total_entries'=>3, 'total_pages'=>1}) }
+        end
+      end
+
+      context 'by min and max area sq feet range.' do
+
+        context 'When search by greater than equal to min area sq feet' do
+          let!(:result) do
+            Apartment.where('area >=?', 1150).order(:created_at).map do |apartment|
+              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+                'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+            end
+          end
+          before do
+            get :index, params: { min_area: 1150 }, format: :json
+          end
+
+          it { expect(response.status).to eq(200) }
+          it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+          it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>2,
+                                                                     'total_entries'=>2, 'total_pages'=>1}) }
+        end
+
+        context 'When search by less than equal to max area sq feet' do
+          let!(:result) do
+            Apartment.where('area <=?', 1000).order(:created_at).map do |apartment|
+              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+                'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+            end
+          end
+          before do
+            get :index, params: { max_area: 1000 }, format: :json
+          end
+
+          it { expect(response.status).to eq(200) }
+          it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+          it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>2,
+                                                                     'total_entries'=>2, 'total_pages'=>1}) }
+        end
+
+        context 'When search by given area range' do
+          let!(:result) do
+            Apartment.where('area >=? AND area <=?', 800, 1100).order(:created_at).map do |apartment|
+              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
+                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
+                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
+                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+                'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
+            end
+          end
+          before do
+            get :index, params: { min_area: 800, max_area: 1100 }, format: :json
+          end
+
+          it { expect(response.status).to eq(200) }
+          it { expect(JSON.parse(response.body)['apartments']).to eq(result) }
+          it { expect(JSON.parse(response.body)['paginates']).to eq({'current_page'=>1, 'page_entries'=>2,
+                                                                     'total_entries'=>2, 'total_pages'=>1}) }
+        end
+      end
+    end
   end
 
   describe 'GET show' do
