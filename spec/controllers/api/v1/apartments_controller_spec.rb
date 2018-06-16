@@ -16,10 +16,11 @@ RSpec.describe Api::V1::ApartmentsController do
       let!(:apartments) { create_list(:apartment, 33)}
       let!(:result) do
         Apartment.order(:created_at).page(1).per_page(10).map do |apartment|
-          { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-            'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-            'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-            'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+          { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+            'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+            'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+            'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+            'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
             'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
         end
       end
@@ -38,10 +39,11 @@ RSpec.describe Api::V1::ApartmentsController do
       let!(:apartments) { create_list(:apartment, 33)}
       let!(:result) do
         Apartment.order(:created_at).page(2).per_page(20).map do |apartment|
-          { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-            'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-            'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-            'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+          { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+            'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+            'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+            'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+            'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
             'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
         end
       end
@@ -80,10 +82,11 @@ RSpec.describe Api::V1::ApartmentsController do
 
         let!(:result) do
           Apartment.where(apartment_type: 'Residential').order(:created_at).map do |apartment|
-            { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-              'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-              'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-              'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+            { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+              'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+              'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+              'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+              'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
               'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
           end
         end
@@ -102,10 +105,11 @@ RSpec.describe Api::V1::ApartmentsController do
         context 'When search by greater than min price' do
           let!(:result) do
             Apartment.where('price >=?', 90000).order(:created_at).map do |apartment|
-              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+              { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+                'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+                'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+                'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+                'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
                 'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
             end
           end
@@ -122,10 +126,11 @@ RSpec.describe Api::V1::ApartmentsController do
         context 'When search by less than max price' do
           let!(:result) do
             Apartment.where('price <=?', 90000).order(:created_at).map do |apartment|
-              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+              { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+                'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+                'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+                'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+                'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
                 'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
             end
           end
@@ -142,10 +147,11 @@ RSpec.describe Api::V1::ApartmentsController do
         context 'When search by given price range' do
           let!(:result) do
             Apartment.where('price >=? AND price <=?', 60000, 100000).order(:created_at).map do |apartment|
-              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+              { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+                'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+                'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+                'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+                'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
                 'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
             end
           end
@@ -165,10 +171,11 @@ RSpec.describe Api::V1::ApartmentsController do
         context 'When search by greater than equal to min area sq feet' do
           let!(:result) do
             Apartment.where('area >=?', 1150).order(:created_at).map do |apartment|
-              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+              { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+                'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+                'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+                'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+                'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
                 'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
             end
           end
@@ -185,10 +192,11 @@ RSpec.describe Api::V1::ApartmentsController do
         context 'When search by less than equal to max area sq feet' do
           let!(:result) do
             Apartment.where('area <=?', 1000).order(:created_at).map do |apartment|
-              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+              { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+                'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+                'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+                'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+                'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
                 'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
             end
           end
@@ -205,10 +213,11 @@ RSpec.describe Api::V1::ApartmentsController do
         context 'When search by given area range' do
           let!(:result) do
             Apartment.where('area >=? AND area <=?', 800, 1100).order(:created_at).map do |apartment|
-              { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-                'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-                'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-                'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+              { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+                'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+                'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+                'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+                'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
                 'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
             end
           end
@@ -228,10 +237,11 @@ RSpec.describe Api::V1::ApartmentsController do
   describe 'GET show' do
     let!(:apartment) { create(:apartment)}
     let!(:result) do
-      { 'street' => apartment.street, 'city' => apartment.city, 'zip' => apartment.zip,
-        'state' => apartment.state, 'beds' => apartment.beds, 'baths' => apartment.baths,
-        'apartment_type' => apartment.apartment_type, 'price' => apartment.price.to_s,
-        'area_sq_ft' => apartment.area, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
+      { 'id' => apartment.id, 'street' => apartment.street, 'city' => apartment.city,
+        'zip' => apartment.zip, 'state' => apartment.state, 'beds' => apartment.beds,
+        'baths' => apartment.baths, 'apartment_type' => apartment.apartment_type,
+        'price' => apartment.price.to_s, 'area_sq_ft' => apartment.area,
+        'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
         'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
     end
 
