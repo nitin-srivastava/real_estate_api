@@ -10,8 +10,8 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'jwt'
 gem 'simple_command'
-
-# gem 'rack-cors'
+gem 'jbuilder'
+gem 'rack-cors'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
