@@ -2,7 +2,7 @@ module Api
   module V1
     class ApartmentsController < ApplicationController
 
-      before_action :set_apartment, only: [:show]
+      before_action :set_apartment, only: [:show, :update, :destroy]
 
       def index
         @apartments = Apartment.order(:created_at)
@@ -22,6 +22,20 @@ module Api
         end
       end
 
+      def update
+        if @apartment.update_attributes(apartment_params)
+          render status: :ok, json: { success: 'Apartment was updated successfully.' }
+        else
+          render status: :unprocessable_entity, json: { errors: @apartment.errors.full_messages }
+        end
+      end
+
+      def destroy
+        if @apartment.destroy
+          render status: :ok, json: { success: 'Apartment was deleted successfully.' }
+        end
+      end
+
       private
 
       def apartment_params
@@ -30,6 +44,8 @@ module Api
 
       def set_apartment
         @apartment = Apartment.find(params[:id])
+      rescue
+        render status: :unprocessable_entity, json: { errors: 'Record not found' }
       end
 
     end

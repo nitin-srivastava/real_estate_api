@@ -55,12 +55,24 @@ RSpec.describe Api::V1::ApartmentsController do
         'price' => apartment.price.to_s, 'sale_date' => apartment.sale_date.strftime('%d/%m/%Y'),
         'created_at' => apartment.created_at.strftime('%d/%m/%Y') }
     end
-    before do
-      get :show, params: { id: apartment.id }, format: :json
+
+    context 'when id is invalid' do
+      before do
+        get :show, params: { id: 15 }, format: :json
+      end
+
+      it { expect(response.status).to eq(422) }
+      it { expect(JSON.parse(response.body)['errors']).to eq('Record not found') }
     end
 
-    it { expect(response.status).to eq(200) }
-    it { expect(JSON.parse(response.body)).to eq(result) }
+    context 'when id is valid' do
+      before do
+        get :show, params: { id: apartment.id }, format: :json
+      end
+
+      it { expect(response.status).to eq(200) }
+      it { expect(JSON.parse(response.body)).to eq(result) }
+    end
   end
 
   describe 'POST create' do
@@ -84,6 +96,65 @@ RSpec.describe Api::V1::ApartmentsController do
       it { expect(response.status).to eq(200) }
       it { expect(JSON.parse(response.body)['success']).to eq('Apartment was created successfully.') }
       it { expect(Apartment.count).to eq(1) }
+    end
+  end
+
+  describe 'PUT update' do
+    let!(:apartment) { create(:apartment)}
+
+    context 'when invalid id' do
+      before do
+        put :update, params: { id: 15, apartment: apartment.attributes.merge!('zip' => nil, 'city' => nil)}, format: :json
+      end
+
+      it { expect(response.status).to eq(422) }
+      it { expect(JSON.parse(response.body)['errors']).to eq('Record not found') }
+    end
+
+    context 'is unsuccessful' do
+      before do
+        put :update, params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => nil, 'city' => nil)}, format: :json
+      end
+
+      it { expect(response.status).to eq(422) }
+      it { expect(JSON.parse(response.body)['errors']).to eq(["City can't be blank", "Zip can't be blank"]) }
+      it { expect(apartment.reload.zip).to eq(95838) }
+      it { expect(apartment.reload.city).to eq('SACRAMENTO') }
+    end
+
+    context 'is successful' do
+      before do
+        put :update, params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => 95660, 'city' => 'NORTH HIGHLANDS')}, format: :json
+      end
+
+      it { expect(response.status).to eq(200) }
+      it { expect(JSON.parse(response.body)['success']).to eq('Apartment was updated successfully.') }
+      it { expect(apartment.reload.zip).to eq(95660) }
+      it { expect(apartment.reload.city).to eq('NORTH HIGHLANDS') }
+    end
+  end
+
+  describe 'DELETE update' do
+    let!(:apartment) { create(:apartment)}
+
+    context 'is unsuccessful' do
+      before do
+        delete :destroy, params: { id: 10 }, format: :json
+      end
+
+      it { expect(response.status).to eq(422) }
+      it { expect(JSON.parse(response.body)['errors']).to eq('Record not found') }
+      it { expect(Apartment.count).to eq(1) }
+    end
+
+    context 'is successful' do
+      before do
+        delete :destroy, params: { id: apartment.id }, format: :json
+      end
+
+      it { expect(response.status).to eq(200) }
+      it { expect(JSON.parse(response.body)['success']).to eq('Apartment was deleted successfully.') }
+      it { expect(Apartment.count).to eq(0) }
     end
   end
 
