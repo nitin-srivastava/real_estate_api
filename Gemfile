@@ -9,6 +9,7 @@ gem 'puma', '~> 3.11'
 gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'jwt'
+gem 'simple_command'
 
 # gem 'rack-cors'
 
@@ -26,7 +27,6 @@ end
 group :test do
   gem 'factory_bot_rails', '~> 4.0'
   gem 'shoulda-matchers', '~> 3.1'
-  gem 'faker'
   gem 'database_cleaner'
 end
 
