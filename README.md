@@ -57,12 +57,12 @@ I have achieved the 100% test coverage. To see the coverage the result open the 
 
 # Available endpoints
 As per the requirements here are some endpoints.
-##### User authentication  
+#### User authentication  
 | Action | HTTP Verb | PATH | Params |
 | ------ | ------ | ----- | ---- |
 | authenticate#login | POST | /api/v1/auth/login | email and password |
 
-##### Apartment CRUD and Search
+#### Apartment CRUD and Search
 All endpoints for apartments will only work with adding the auth token in headers.
 ```
 { 'Authorization' => 'abcxyz123' }
@@ -73,13 +73,13 @@ All endpoints for apartments will only work with adding the auth token in header
 | apartments#show | GET | /api/v1/apartments/:id | Apartment id |
 | apartments#create | POST | /api/v1/apartments | Apartment attributes should be submitted. See the apartment model for required attributes. |
 | apartments#update | PUT | /api/v1/apartments/:id | Id of the apartment that is going to be updated and attribute(s) that should be submitted. |
-| apartments#destroy | DELETE | /api/v1/apartments/:id | Id of the apartment that is going to be deleted. |  
-**Pagination params**
+| apartments#destroy | DELETE | /api/v1/apartments/:id | Id of the apartment that is going to be deleted.|
+#### Pagination params  
 Default page number and per page records are 1 and 10 respectively. We can pass the pagination params `page` and `per_page` to `index` action to set the page number and number of records on per page.
 ```
 /api/v1/apartments?page=2&per_page=20
 ```
-**Search params**
+#### Search params  
 The `index` action is also responsible for filter records by params. Below are the valid params for searching.
 - `apartment_type` for searching records by type of apartments like Residential, Condo, etc.
 - `min_price` and `max_price` for searching records by given price range.
