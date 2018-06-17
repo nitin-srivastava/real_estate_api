@@ -68,7 +68,6 @@ All endpoints for apartments will only work with adding the auth token in header
 ```
 { 'Authorization' => 'abcxyz123' }
 ```
-
 | Action | HTTP Verb | PATH | Params |
 | ------ | --------- | ----- | ---- |
 | apartments#index | GET | /api/v1/apartments | Pagination and search params. For details please see below the table. |
@@ -76,6 +75,7 @@ All endpoints for apartments will only work with adding the auth token in header
 | apartments#create | POST | /api/v1/apartments | Apartment attributes should be submitted. See the apartment model for required attributes. |
 | apartments#update | PUT | /api/v1/apartments/:id | Id of the apartment that is going to be updated and attribute(s) that should be submitted. |
 | apartments#destroy | DELETE | /api/v1/apartments/:id | Id of the apartment that is going to be deleted. |
+#
 **Pagination params**
 Default page number and per page records are 1 and 10 respectively. We can pass the pagination params `page` and `per_page` to `index` action to set the page number and number of records on per page.
 ```
