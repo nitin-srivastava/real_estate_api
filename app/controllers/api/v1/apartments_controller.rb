@@ -43,7 +43,7 @@ module Api
       private
 
       def apartment_params
-        params.require(:apartment).permit(:street, :city, :zip, :state, :beds, :baths, :area, :apartment_type, :price, :sale_date, :latitude, :longitude)
+        params.permit(:street, :city, :zip, :state, :beds, :baths, :area, :apartment_type, :price, :sale_date, :latitude, :longitude)
       end
 
       def set_apartment

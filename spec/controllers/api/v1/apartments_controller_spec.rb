@@ -269,7 +269,7 @@ RSpec.describe Api::V1::ApartmentsController do
 
     context 'is unsuccessful' do
       before do
-        post :create, params: { apartment: apartment_attrs.merge!('state' => nil, 'city' => nil)}, format: :json
+        post :create, params: apartment_attrs.merge!('state' => nil, 'city' => nil), format: :json
       end
 
       it { expect(response.status).to eq(422) }
@@ -279,7 +279,7 @@ RSpec.describe Api::V1::ApartmentsController do
 
     context 'is successful' do
       before do
-        post :create, params: { apartment: apartment_attrs }, format: :json
+        post :create, params: apartment_attrs, format: :json
       end
 
       it { expect(response.status).to eq(200) }
@@ -293,7 +293,7 @@ RSpec.describe Api::V1::ApartmentsController do
 
     context 'when invalid id' do
       before do
-        put :update, params: { id: 15, apartment: apartment.attributes.merge!('zip' => nil, 'city' => nil)}, format: :json
+        put :update, params: { id: 10 }, format: :json
       end
 
       it { expect(response.status).to eq(422) }
@@ -303,7 +303,7 @@ RSpec.describe Api::V1::ApartmentsController do
     context 'is unsuccessful' do
       before do
         put :update,
-            params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => nil, 'city' => nil)},
+            params: apartment.attributes.merge!('zip' => nil, 'city' => nil),
             format: :json
       end
 
@@ -316,7 +316,7 @@ RSpec.describe Api::V1::ApartmentsController do
     context 'is successful' do
       before do
         put :update,
-            params: { id: apartment.id, apartment: apartment.attributes.merge!('zip' => 95660, 'city' => 'NORTH HIGHLANDS')},
+            params: apartment.attributes.merge!('zip' => 95660, 'city' => 'NORTH HIGHLANDS'),
             format: :json
       end
 
