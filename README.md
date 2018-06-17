@@ -15,7 +15,7 @@ This is a Rails API project.
 
 # Prerequisites
 ### Ruby on Rails version
-This project has been developed in **Ruby 2.5.1** and **Rails 5.2.0**. Make sure your system has the same versions.
+This project has been developed in **Ruby 2.5.1** and **Rails 5.2.0**. Make sure your have the same versions.
 ### Database
 Used **PostgreSQL** Database.
 # Project setup
@@ -31,13 +31,13 @@ $ bundle install
 ```
 After successfully bundle the project, run the below command to create the database and tables.
 ```
-$ rake db:create
-$ rake db:migrate
+$ bundle exec rake db:create
+$ bundle exec rake db:migrate
 ```
 Run the below rake tasks to populate the data in to the created DB.
 ```
-$ rake db:seed  #Create user for authentication
-$ rake apartment:import #Populate the data from attached CSV file.
+$ bundle exec rake db:seed  #Create user for authentication
+$ bundle exec rake apartment:import #Populate the data from attached CSV file.
 ```
 Start the rails server.
 ```
@@ -57,12 +57,12 @@ I have achieved the 100% test coverage. To see the coverage the result open the 
 
 # Available endpoints
 As per the requirements here are some endpoints.
-#### User authentication  
+### User authentication  
 | Action | HTTP Verb | PATH | Params |
 | ------ | ------ | ----- | ---- |
 | authenticate#login | POST | /api/v1/auth/login | email and password |
 
-#### Apartment CRUD and Search
+### Apartment CRUD and Search
 All endpoints for apartments will only work with adding the auth token in headers.
 ```
 { 'Authorization' => 'abcxyz123' }
